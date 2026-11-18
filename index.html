@@ -1,0 +1,933 @@
+
+<!DOCTYPE html>
+<html lang="es-MX">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>3.2 Interacción Virtual | Laboratorio VR</title>
+
+    <meta name="description"
+        content="Laboratorio de realidad virtual para clasificar objetos tridimensionales mediante física, gravedad y seguimiento de manos.">
+
+    <meta name="theme-color" content="#080D1B">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="./css/style.css">
+
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/",
+            "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"
+        }
+    }
+    </script>
+
+</head>
+
+<body>
+
+    <!-- =====================================
+         NAVEGACIÓN
+    ====================================== -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top"
+         id="main-navbar">
+
+        <div class="container">
+
+            <a class="navbar-brand" href="#inicio">
+
+                <i class="bi bi-boxes me-2"></i>
+
+                INTERACCIÓN <strong>VIRTUAL</strong>
+
+            </a>
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarContent"
+                aria-controls="navbarContent"
+                aria-expanded="false"
+                aria-label="Abrir navegación">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse"
+                 id="navbarContent">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#inicio">Inicio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#laboratorio">Laboratorio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#categorias">Categorías</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#instrucciones">Instrucciones</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#autor">Desarrollador</a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================
+         PORTADA
+    ====================================== -->
+
+    <header class="hero-section" id="inicio">
+
+        <div class="hero-glow"></div>
+
+        <div class="container">
+
+            <div class="row align-items-center min-vh-100 py-5">
+
+                <div class="col-lg-7">
+
+                    <div class="hero-content">
+
+                        <div class="status-label mb-4">
+
+                            <span class="status-dot"></span>
+
+                            EXPERIENCIA INMERSIVA WEBXR
+
+                        </div>
+
+                        <h1 class="hero-title">
+
+                            3.2
+
+                            <span class="gradient-text">
+                                INTERACCIÓN
+                            </span>
+
+                            VIRTUAL
+
+                        </h1>
+
+                        <h2 class="hero-subtitle">
+                            Laboratorio de física y clasificación 3D
+                        </h2>
+
+                        <p class="hero-description mt-4">
+
+                            Explora un entorno tridimensional, recoge figuras
+                            geométricas y clasifícalas en sus respectivos
+                            recipientes mediante seguimiento de manos,
+                            gravedad y colisiones físicas reales.
+
+                        </p>
+
+                        <div class="hero-buttons mt-4">
+
+                            <a href="#laboratorio"
+                               class="btn btn-primary-custom">
+
+                                <i class="bi bi-play-fill me-2"></i>
+
+                                Explorar laboratorio
+
+                            </a>
+
+                            <a href="#instrucciones"
+                               class="btn btn-outline-custom">
+
+                                <i class="bi bi-info-circle me-2"></i>
+
+                                Cómo jugar
+
+                            </a>
+
+                        </div>
+
+                        <div class="hero-features mt-5">
+
+                            <div class="feature-mini">
+                                <i class="bi bi-hand-index-thumb"></i>
+                                <span>Hand Tracking</span>
+                            </div>
+
+                            <div class="feature-mini">
+                                <i class="bi bi-boxes"></i>
+                                <span>20 objetos</span>
+                            </div>
+
+                            <div class="feature-mini">
+                                <i class="bi bi-cpu"></i>
+                                <span>Física 3D</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Ilustración decorativa -->
+
+                <div class="col-lg-5 mt-5 mt-lg-0">
+
+                    <div class="hero-visual">
+
+                        <div class="visual-orbit orbit-one"></div>
+
+                        <div class="visual-orbit orbit-two"></div>
+
+                        <div class="visual-center">
+
+                            <i class="bi bi-boxes"></i>
+
+                        </div>
+
+                        <div class="floating-object object-one">
+                            <i class="bi bi-circle-fill"></i>
+                        </div>
+
+                        <div class="floating-object object-two">
+                            <i class="bi bi-square-fill"></i>
+                        </div>
+
+                        <div class="floating-object object-three">
+                            <i class="bi bi-triangle-fill"></i>
+                        </div>
+
+                        <div class="floating-object object-four">
+                            <i class="bi bi-diamond-fill"></i>
+                        </div>
+
+                        <div class="visual-caption">
+
+                            <span class="status-dot"></span>
+
+                            SIMULACIÓN FÍSICA 3D
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================
+         LABORATORIO 3D
+    ====================================== -->
+
+    <section class="laboratory-section section-padding"
+             id="laboratorio">
+
+        <div class="container">
+
+            <div class="section-heading text-center mb-5">
+
+                <span class="section-tag">
+                    ENTORNO INTERACTIVO
+                </span>
+
+                <h2>
+
+                    Laboratorio de
+
+                    <span class="gradient-text">
+                        clasificación
+                    </span>
+
+                </h2>
+
+                <p>
+
+                    Manipula objetos, experimenta con la gravedad
+                    y completa los desafíos de clasificación.
+
+                </p>
+
+            </div>
+
+
+            <div class="laboratory-card">
+
+                <!-- Encabezado -->
+
+                <div class="laboratory-header">
+
+                    <div>
+
+                        <span class="lab-indicator">
+
+                            <span class="status-dot"></span>
+
+                            SISTEMA PREPARADO
+
+                        </span>
+
+                        <h3 class="mt-2">
+                            Laboratorio físico tridimensional
+                        </h3>
+
+                    </div>
+
+                    <div class="lab-version">
+                        THREE.JS / CANNON-ES / WEBXR
+                    </div>
+
+                </div>
+
+
+                <!-- Vista 3D -->
+
+                <div id="scene-container"
+                     class="scene-container">
+
+                    <div id="loading-screen"
+                         class="loading-screen">
+
+                        <div class="loading-spinner"></div>
+
+                        <h4>Inicializando laboratorio</h4>
+
+                        <p>
+                            Preparando escena y simulación física...
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Compatibilidad -->
+
+                <div class="compatibility-panel">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        <span id="compatibility-status"
+                              role="status"
+                              aria-live="polite">
+
+                            Comprobando compatibilidad WebXR...
+
+                        </span>
+
+                    </div>
+
+                    <div id="error-message"
+                         class="error-message mt-2"
+                         role="alert"
+                         aria-live="assertive">
+
+                    </div>
+
+                </div>
+
+
+                <!-- Botón VR -->
+
+                <div class="laboratory-actions text-center">
+
+                    <div id="vr-button-container">
+
+                        <!-- Three.js insertará el botón VR -->
+
+                    </div>
+
+                    <p class="vr-help mt-3">
+
+                        <i class="bi bi-headset-vr me-1"></i>
+
+                        Utiliza Meta Quest 3 y Meta Quest Browser
+                        para acceder a la experiencia inmersiva.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         CATEGORÍAS
+    ====================================== -->
+
+    <section class="categories-section section-padding"
+             id="categorias">
+
+        <div class="container">
+
+            <div class="section-heading text-center mb-5">
+
+                <span class="section-tag">
+                    CLASIFICACIÓN
+                </span>
+
+                <h2>
+
+                    Identifica las
+
+                    <span class="gradient-text">
+                        figuras geométricas
+                    </span>
+
+                </h2>
+
+                <p>
+
+                    El laboratorio contiene veinte objetos,
+                    distribuidos en cuatro categorías.
+
+                </p>
+
+            </div>
+
+
+            <div class="row g-4">
+
+                <!-- Esferas -->
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="category-card category-sphere">
+
+                        <div class="category-visual">
+
+                            <div class="shape sphere-shape"></div>
+
+                        </div>
+
+                        <h4>Esferas</h4>
+
+                        <span>5 objetos</span>
+
+                        <div class="category-color"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Cubos -->
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="category-card category-cube">
+
+                        <div class="category-visual">
+
+                            <div class="shape cube-shape"></div>
+
+                        </div>
+
+                        <h4>Cubos</h4>
+
+                        <span>5 objetos</span>
+
+                        <div class="category-color"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Pirámides -->
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="category-card category-pyramid">
+
+                        <div class="category-visual">
+
+                            <div class="shape pyramid-shape"></div>
+
+                        </div>
+
+                        <h4>Pirámides</h4>
+
+                        <span>5 objetos</span>
+
+                        <div class="category-color"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Octaedros -->
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="category-card category-octahedron">
+
+                        <div class="category-visual">
+
+                            <div class="shape octahedron-shape"></div>
+
+                        </div>
+
+                        <h4>Octaedros</h4>
+
+                        <span>5 objetos</span>
+
+                        <div class="category-color"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="category-summary mt-4 text-center">
+
+                <span>
+                    <i class="bi bi-box-seam me-2"></i>
+                    20 objetos en total
+                </span>
+
+                <span>
+                    <i class="bi bi-grid me-2"></i>
+                    4 categorías
+                </span>
+
+                <span>
+                    <i class="bi bi-inboxes me-2"></i>
+                    4 recipientes
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         INSTRUCCIONES
+    ====================================== -->
+
+    <section class="instructions-section section-padding"
+             id="instrucciones">
+
+        <div class="container">
+
+            <div class="section-heading text-center mb-5">
+
+                <span class="section-tag">
+                    GUÍA DE USO
+                </span>
+
+                <h2>
+
+                    ¿Cómo funciona la
+
+                    <span class="gradient-text">
+                        experiencia?
+                    </span>
+
+                </h2>
+
+                <p>
+
+                    Utiliza tus manos para recoger y clasificar
+                    las figuras dentro del entorno virtual.
+
+                </p>
+
+            </div>
+
+
+            <div class="row g-4">
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="instruction-card">
+
+                        <div class="instruction-icon">
+
+                            <i class="bi bi-eye"></i>
+
+                        </div>
+
+                        <span class="step-number">01</span>
+
+                        <h4>Identifica</h4>
+
+                        <p>
+
+                            Observa las figuras distribuidas
+                            en las cuatro mesas de trabajo.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="instruction-card">
+
+                        <div class="instruction-icon">
+
+                            <i class="bi bi-hand-index-thumb"></i>
+
+                        </div>
+
+                        <span class="step-number">02</span>
+
+                        <h4>Selecciona</h4>
+
+                        <p>
+
+                            Apunta a una figura y utiliza
+                            el gesto de pinza para sujetarla.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="instruction-card">
+
+                        <div class="instruction-icon">
+
+                            <i class="bi bi-arrows-move"></i>
+
+                        </div>
+
+                        <span class="step-number">03</span>
+
+                        <h4>Transporta</h4>
+
+                        <p>
+
+                            Lleva el objeto hacia el recipiente
+                            correspondiente.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="instruction-card">
+
+                        <div class="instruction-icon">
+
+                            <i class="bi bi-inboxes"></i>
+
+                        </div>
+
+                        <span class="step-number">04</span>
+
+                        <h4>Clasifica</h4>
+
+                        <p>
+
+                            Suelta la figura y deja que
+                            la gravedad y las colisiones actúen.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         TECNOLOGÍAS
+    ====================================== -->
+
+    <section class="technology-section section-padding">
+
+        <div class="container">
+
+            <div class="section-heading text-center mb-5">
+
+                <span class="section-tag">
+                    TECNOLOGÍAS
+                </span>
+
+                <h2>
+
+                    Desarrollo de
+
+                    <span class="gradient-text">
+                        realidad virtual
+                    </span>
+
+                </h2>
+
+            </div>
+
+
+            <div class="row g-4 justify-content-center">
+
+                <div class="col-6 col-md-4">
+
+                    <div class="technology-card">
+
+                        <i class="bi bi-boxes"></i>
+
+                        <h5>Three.js</h5>
+
+                        <p>Renderizado tridimensional.</p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-6 col-md-4">
+
+                    <div class="technology-card">
+
+                        <i class="bi bi-box"></i>
+
+                        <h5>Cannon-es</h5>
+
+                        <p>Simulación de física y colisiones.</p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-6 col-md-4">
+
+                    <div class="technology-card">
+
+                        <i class="bi bi-headset-vr"></i>
+
+                        <h5>WebXR</h5>
+
+                        <p>Realidad virtual y seguimiento de manos.</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         FOOTER
+    ====================================== -->
+
+    <footer class="footer-section" id="autor">
+
+        <div class="container">
+
+            <div class="row gy-4 align-items-center">
+
+                <div class="col-md-6">
+
+                    <a href="#inicio" class="footer-brand">
+
+                        <i class="bi bi-boxes me-2"></i>
+
+                        INTERACCIÓN VIRTUAL
+
+                    </a>
+
+                    <p class="footer-description mt-3">
+
+                        Laboratorio de clasificación tridimensional
+                        desarrollado con Three.js, Cannon-es y WebXR.
+
+                    </p>
+
+                    <div class="footer-technologies">
+
+                        <span>Three.js</span>
+                        <span>Cannon-es</span>
+                        <span>WebXR</span>
+                        <span>Bootstrap 5</span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Datos personales -->
+
+                <div class="col-md-6">
+
+                    <div class="developer-panel">
+
+                        <h5 class="developer-title mb-3">
+
+                            <i class="bi bi-person-badge me-2"></i>
+
+                            Datos del desarrollador
+
+                        </h5>
+
+
+                        <p class="developer-info">
+
+                            <i class="bi bi-person"></i>
+
+                            <strong>Nombre:</strong>
+
+                            <span>ESCRIBE TU NOMBRE</span>
+
+                        </p>
+
+
+                        <p class="developer-info">
+
+                            <i class="bi bi-mortarboard"></i>
+
+                            <strong>Carrera:</strong>
+
+                            <span>Ingeniería en Tecnologías de la Información y Comunicaciones</span>
+
+                        </p>
+
+
+                        <p class="developer-info">
+
+                            <i class="bi bi-calendar3"></i>
+
+                            <strong>Semestre:</strong>
+
+                            <span>ESCRIBE TU SEMESTRE</span>
+
+                        </p>
+
+
+                        <p class="developer-info mb-0">
+
+                            <i class="bi bi-code-slash"></i>
+
+                            <strong>Proyecto:</strong>
+
+                            <span>3.2 Interacción Virtual</span>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr class="footer-divider">
+
+
+            <div class="row align-items-center gy-2">
+
+                <div class="col-md-6 text-center text-md-start">
+
+                    <p class="copyright mb-0">
+
+                        © 2026 Interacción Virtual.
+
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 text-center text-md-end">
+
+                    <p class="copyright mb-0">
+
+                        Desarrollado con
+                        <i class="bi bi-heart-fill"></i>
+                        y tecnologías web 3D.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================
+         SCRIPTS
+    ====================================== -->
+
+    <!-- Bootstrap -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <!-- Aplicación JavaScript modular -->
+    <script type="module" src="./js/main.js"></script>
+
+</body>
+
+</html>
