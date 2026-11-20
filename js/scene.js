@@ -5,7 +5,7 @@
 
    Escenario 3D:
    - 4 mesas de trabajo
-   - 20 objetos geométricos
+   - 32 objetos geométricos
    - 4 recipientes
    - Suelo y paredes
    - Iluminación ambiental
@@ -37,9 +37,9 @@ const SCENE_CONFIG = {
 
     wallThickness: 0.3,
 
-    tableWidth: 2.6,
+    tableWidth: 3.4,
 
-    tableDepth: 2.1,
+    tableDepth: 2.4,
 
     tableHeight: 0.82,
 
@@ -47,9 +47,9 @@ const SCENE_CONFIG = {
 
     tableLegHeight: 0.76,
 
-    objectsPerTable: 5,
+    objectsPerTable: 8,
 
-    totalObjects: 20,
+    totalObjects: 32,
 
     containerWidth: 1.4,
 
@@ -66,30 +66,30 @@ const SCENE_CONFIG = {
 // MATERIALES VISUALES
 // =============================================
 
+
 const COLORS = {
 
-    floor: 0x101A32,
+    // Ambiente pastel
+    floor: 0xD9E2ED,
+    floorGrid: 0xB5B6D4,
 
-    floorGrid: 0x34466D,
+    // Mobiliario
+    table: 0xC4C5DD,
+    tableEdge: 0xA6DDE8,
 
-    table: 0x263553,
+    // Figuras
+    sphere: 0x69BFE6,
+    cube: 0xE99AAE,
+    pyramid: 0xEBC77D,
+    octahedron: 0xB49BD9,
 
-    tableEdge: 0x28D9FF,
+    // Recipientes
+    containerBase: 0xD5D0E5,
 
-    sphere: 0x28A9FF,
-
-    cube: 0xFF5577,
-
-    pyramid: 0xFFD166,
-
-    octahedron: 0xA78BFA,
-
-    containerBase: 0x192642,
-
-    walls: 0x263553
+    // Paredes
+    walls: 0xD9D0E8
 
 };
-
 
 // =============================================
 // CREAR MATERIALES
@@ -147,21 +147,25 @@ function createMaterials() {
         }),
 
 
+
         wall: new THREE.MeshStandardMaterial({
 
             color: COLORS.walls,
 
-            roughness: 0.85,
+            roughness: 0.9,
 
-            metalness: 0.25,
+            metalness: 0.05,
 
             transparent: true,
 
-            opacity: 0.45,
+            opacity: 0.88,
 
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide,
+
+            depthWrite: true
 
         })
+
 
     };
 
@@ -244,128 +248,72 @@ function createCategoryMaterials() {
 // ILUMINACIÓN
 // =============================================
 
+
 function createLighting(scene) {
 
-    // Luz ambiental.
+    // Luz ambiental azul y violeta.
     const ambient = new THREE.HemisphereLight(
-
-        0xAFCBFF,
-
-        0x18213B,
-
-        1.5
-
+        0xFFFFFF,
+        0xD8CFE8,
+        2.2
     );
 
     scene.add(ambient);
 
 
-    // Luz principal.
+    // Iluminación principal blanca.
     const mainLight = new THREE.DirectionalLight(
-
-        0xFFFFFF,
-
-        2.0
-
+        0xFFF8F5,
+        2.5
     );
 
-    mainLight.position.set(
-
-        4,
-
-        9,
-
-        5
-
-    );
+    mainLight.position.set(4, 9, 5);
 
     scene.add(mainLight);
 
 
-    // Luz violeta.
+    // Luz rosa pastel.
     const purpleLight = new THREE.PointLight(
-
-        0x7865FF,
-
-        35,
-
-        14
-
+        0xD8B9F0,
+        18,
+        18
     );
 
-    purpleLight.position.set(
-
-        -4,
-
-        3,
-
-        -3
-
-    );
+    purpleLight.position.set(-4, 3, -3);
 
     scene.add(purpleLight);
 
 
-    // Luz cian.
+    // Luz azul cielo.
     const cyanLight = new THREE.PointLight(
-
-        0x28D9FF,
-
-        30,
-
-        14
-
+        0xA8E4F0,
+        20,
+        18
     );
 
-    cyanLight.position.set(
-
-        4,
-
-        3,
-
-        3
-
-    );
+    cyanLight.position.set(4, 3, 3);
 
     scene.add(cyanLight);
 
 
-    // Luz central.
+    // Luz central blanca.
     const centerLight = new THREE.PointLight(
-
-        0xFFFFFF,
-
-        15,
-
-        12
-
+        0xFFF4EC,
+        18,
+        16
     );
 
-    centerLight.position.set(
-
-        0,
-
-        5,
-
-        0
-
-    );
+    centerLight.position.set(0, 5, 0);
 
     scene.add(centerLight);
 
 
     return {
-
         ambient,
-
         mainLight,
-
         purpleLight,
-
         cyanLight,
-
         centerLight
-
     };
 
 }
@@ -440,17 +388,11 @@ function createFloor(scene, physics, materials) {
 
     // Cuadrícula decorativa.
     const grid = new THREE.GridHelper(
-
-        size,
-
-        32,
-
-        COLORS.floorGrid,
-
-        0x1D2944
-
-    );
-
+    size,
+    32,
+    0xB8A8D9,
+    0xC5D7E6
+);
     grid.position.y = 0.008;
 
     scene.add(grid);
@@ -931,7 +873,7 @@ function createLabel(scene, text, color, position) {
 
 
     // Fondo.
-    context.fillStyle = 'rgba(8, 13, 27, 0.9)';
+    context.fillStyle = 'rgba(248, 245, 252, 0.95)';
 
     context.fillRect(
 
@@ -971,7 +913,7 @@ function createLabel(scene, text, color, position) {
 
     context.textBaseline = 'middle';
 
-    context.fillStyle = '#FFFFFF';
+    context.fillStyle = '#526078';
 
     context.fillText(
 
@@ -1579,17 +1521,18 @@ function getObjectPhysicsOptions(category) {
 
 function getTableObjectPositions(table, count) {
 
+    // Ocho posiciones distribuidas en dos filas.
     const offsets = [
 
-        [-0.65, -0.38],
+        [-1.20, -0.55],
+        [-0.40, -0.55],
+        [0.40, -0.55],
+        [1.20, -0.55],
 
-        [0, -0.38],
-
-        [0.65, -0.38],
-
-        [-0.35, 0.38],
-
-        [0.35, 0.38]
+        [-1.20, 0.55],
+        [-0.40, 0.55],
+        [0.40, 0.55],
+        [1.20, 0.55]
 
     ];
 
@@ -1604,11 +1547,11 @@ function getTableObjectPositions(table, count) {
 
         positions.push({
 
-            x: table.x + offset[0] + randomRange(-0.05, 0.05),
+            x: table.x + offset[0] + randomRange(-0.025, 0.025),
 
             y: SCENE_CONFIG.tableHeight + 0.55,
 
-            z: table.z + offset[1] + randomRange(-0.05, 0.05)
+            z: table.z + offset[1] + randomRange(-0.025, 0.025)
 
         });
 
@@ -1784,7 +1727,7 @@ function createGeometricObject(
 
 
 // =============================================
-// GENERAR LOS 20 OBJETOS
+// GENERAR LOS 32 OBJETOS
 // =============================================
 
 function createAllObjects(
@@ -1802,7 +1745,7 @@ function createAllObjects(
     const categories = [];
 
 
-    // Crear cinco objetos por categoría.
+    // Crear ocho objetos por categoría.
     Object.keys(CATEGORIES).forEach(categoryKey => {
 
         const category = CATEGORIES[categoryKey];
@@ -1817,7 +1760,7 @@ function createAllObjects(
     });
 
 
-    // Mezclar las veinte figuras.
+    // Mezclar las treinta y dos figuras.
     const shuffledCategories = shuffleArray(categories);
 
 
@@ -1826,7 +1769,7 @@ function createAllObjects(
     let objectIndex = 0;
 
 
-    // Repartir cinco objetos por mesa.
+    // Repartir ocho objetos por mesa.
     tables.forEach((table, tableIndex) => {
 
         const positions = getTableObjectPositions(
@@ -2039,16 +1982,12 @@ export function createLaboratoryScene(scene, physics) {
     // CONFIGURAR ESCENA
     // =================================
 
-    scene.background = new THREE.Color(0x080D1B);
+    scene.background = new THREE.Color(0xE9E2EF);
 
     scene.fog = new THREE.Fog(
-
-        0x080D1B,
-
-        15,
-
-        27
-
+        0xE9E2EF,
+        22,
+        38
     );
 
 

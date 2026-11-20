@@ -29,6 +29,8 @@ import { createAudioSystem } from './audio.js';
 
 import { createEffectsSystem } from './effects.js';
 
+import { createTableCounters } from './tableCounters.js';
+
 
 // =============================================
 // ELEMENTOS HTML
@@ -97,6 +99,8 @@ let hud;
 let audio;
 
 let effects;
+
+let tableCounters;
 
 let initialized = false;
 
@@ -360,7 +364,16 @@ function initializeLaboratory() {
     );
 
 
-    console.log('[MAIN] Laboratorio construido.');
+    tableCounters = createTableCounters(
+
+        scene,
+
+        laboratory.tables
+
+    );
+
+
+    console.log('[MAIN] Laboratorio construido con contadores por mesa.');
 
 }
 
@@ -501,6 +514,12 @@ function initializeGame() {
 
             }
 
+            if (tableCounters) {
+
+                tableCounters.update(stats.categories);
+
+            }
+
 
             // Acierto.
             if (eventType === 'correct') {
@@ -595,6 +614,13 @@ function initializeGame() {
         }
 
     });
+
+
+    const initialStats = game.getStats();
+
+    hud.updateStats(initialStats);
+
+    tableCounters?.update(initialStats.categories);
 
 
     console.log('[MAIN] Sistema de juego conectado.');
@@ -1099,6 +1125,8 @@ function cleanup() {
     game?.dispose();
 
     hud?.dispose();
+
+    tableCounters?.dispose();
 
     effects?.dispose();
 

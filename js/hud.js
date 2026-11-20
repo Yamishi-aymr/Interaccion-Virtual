@@ -445,7 +445,7 @@ export function createHUD(camera, {
 
         errors: 0,
 
-        total: 20,
+        total: 32,
 
         accuracy: 0,
 

@@ -362,11 +362,11 @@ export function debugLog(module, message, data = null) {
 
 export const GAME_CONFIG = {
 
-    TOTAL_OBJECTS: 20,
+    TOTAL_OBJECTS: 32,
 
     TOTAL_CATEGORIES: 4,
 
-    OBJECTS_PER_CATEGORY: 5,
+    OBJECTS_PER_CATEGORY: 8,
 
     TOTAL_CONTAINERS: 4,
 
@@ -397,7 +397,7 @@ export const CATEGORIES = {
 
         hexColor: '#28A9FF',
 
-        count: 5
+        count: 8
 
     },
 
@@ -412,7 +412,7 @@ export const CATEGORIES = {
 
         hexColor: '#FF5577',
 
-        count: 5
+        count: 8
 
     },
 
@@ -427,7 +427,7 @@ export const CATEGORIES = {
 
         hexColor: '#FFD166',
 
-        count: 5
+        count: 8
 
     },
 
@@ -442,7 +442,7 @@ export const CATEGORIES = {
 
         hexColor: '#A78BFA',
 
-        count: 5
+        count: 8
 
     }
 

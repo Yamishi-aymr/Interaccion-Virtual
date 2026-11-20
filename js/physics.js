@@ -2,14 +2,22 @@
 /* =====================================================
    PRACTICA 3.2 - INTERACCION VIRTUAL
    MODULO: PHYSICS.JS
-   Motor físico mediante Cannon-es
+
+   Motor físico mediante Cannon-es.
+
+   Correcciones:
+   - Normales exteriores de pirámides.
+   - Normales exteriores de octaedros.
+   - Colisiones convexas corregidas.
+   - Límites completos de recipientes.
+   - Gravedad y estabilidad.
 ===================================================== */
 
 import * as CANNON from 'cannon-es';
 
 
 // =============================================
-// CONFIGURACIÓN GENERAL
+// CONFIGURACIÓN
 // =============================================
 
 const PHYSICS_CONFIG = {
@@ -22,11 +30,11 @@ const PHYSICS_CONFIG = {
 
     maxDeltaTime: 0.05,
 
-    solverIterations: 12,
+    solverIterations: 20,
 
     defaultFriction: 0.5,
 
-    defaultRestitution: 0.15
+    defaultRestitution: 0.08
 
 };
 
@@ -35,10 +43,6 @@ const PHYSICS_CONFIG = {
 // CONVERSIÓN DE VECTORES
 // =============================================
 
-/**
- * Convierte un vector de Three.js o un objeto
- * {x, y, z} a un vector de Cannon-es.
- */
 function toCannonVector(vector) {
 
     return new CANNON.Vec3(
@@ -51,14 +55,32 @@ function toCannonVector(vector) {
 
 
 // =============================================
-// CREAR FORMAS CONVEXAS
+// CORREGIR ORIENTACIÓN DE CARAS
 // =============================================
 
-/**
- * Crea la geometría física de una pirámide cuadrangular.
- *
- * El origen está en el centro de la figura.
- */
+/*
+   Cannon-es necesita que las caras de un
+   ConvexPolyhedron tengan normales exteriores.
+
+   Invertimos el orden de los vértices de cada
+   cara para orientar correctamente las normales.
+*/
+
+function reverseFaces(faces) {
+
+    return faces.map(face => {
+
+        return [...face].reverse();
+
+    });
+
+}
+
+
+// =============================================
+// CREAR PIRÁMIDE
+// =============================================
+
 function createPyramidShape(width, height, depth) {
 
     const x = width / 2;
@@ -102,16 +124,17 @@ function createPyramidShape(width, height, depth) {
 
         vertices,
 
-        faces
+        faces: reverseFaces(faces)
 
     });
 
 }
 
 
-/**
- * Crea la geometría física de un octaedro.
- */
+// =============================================
+// CREAR OCTAEDRO
+// =============================================
+
 function createOctahedronShape(radius) {
 
     const vertices = [
@@ -156,7 +179,7 @@ function createOctahedronShape(radius) {
 
         vertices,
 
-        faces
+        faces: reverseFaces(faces)
 
     });
 
@@ -167,15 +190,6 @@ function createOctahedronShape(radius) {
 // CREAR FORMAS FÍSICAS
 // =============================================
 
-/**
- * Crea una forma física según la categoría.
- *
- * Categorías:
- * sphere
- * cube
- * pyramid
- * octahedron
- */
 export function createPhysicsShape(category, options = {}) {
 
     const {
@@ -247,19 +261,13 @@ export function createPhysicsShape(category, options = {}) {
 
 
 // =============================================
-// INICIALIZAR MOTOR FÍSICO
+// CREAR MUNDO FÍSICO
 // =============================================
 
 export function createPhysicsWorld() {
 
-    console.log(
-        '[PHYSICS] Inicializando motor físico...'
-    );
+    console.log('[PHYSICS] Inicializando motor físico...');
 
-
-    // =================================
-    // CREAR MUNDO
-    // =================================
 
     const world = new CANNON.World();
 
@@ -276,42 +284,32 @@ export function createPhysicsWorld() {
     );
 
 
-    // Permitir dormir cuerpos en reposo.
     world.allowSleep = true;
 
 
-    // =================================
-    // SOLUCIONADOR
-    // =================================
-
+    // Solucionador.
     world.solver.iterations =
+
         PHYSICS_CONFIG.solverIterations;
 
     world.solver.tolerance = 0.001;
 
 
-    // Broadphase para detección de colisiones.
+    // Detección de colisiones.
     world.broadphase = new CANNON.SAPBroadphase(world);
 
 
     // =================================
-    // MATERIALES FÍSICOS
+    // MATERIALES
     // =================================
 
-    const defaultMaterial = new CANNON.Material(
-        'default'
-    );
+    const defaultMaterial = new CANNON.Material('default');
 
-    const objectMaterial = new CANNON.Material(
-        'objects'
-    );
+    const objectMaterial = new CANNON.Material('objects');
 
-    const surfaceMaterial = new CANNON.Material(
-        'surfaces'
-    );
+    const surfaceMaterial = new CANNON.Material('surfaces');
 
 
-    // Contacto entre objetos.
     const objectContact = new CANNON.ContactMaterial(
 
         objectMaterial,
@@ -322,14 +320,13 @@ export function createPhysicsWorld() {
 
             friction: 0.45,
 
-            restitution: 0.15
+            restitution: 0.08
 
         }
 
     );
 
 
-    // Contacto entre objetos y superficies.
     const surfaceContact = new CANNON.ContactMaterial(
 
         objectMaterial,
@@ -340,18 +337,20 @@ export function createPhysicsWorld() {
 
             friction: 0.65,
 
-            restitution: 0.08
+            restitution: 0.05
 
         }
 
     );
 
 
-    // Contacto predeterminado.
     world.defaultContactMaterial.friction =
+
         PHYSICS_CONFIG.defaultFriction;
 
+
     world.defaultContactMaterial.restitution =
+
         PHYSICS_CONFIG.defaultRestitution;
 
 
@@ -389,7 +388,7 @@ export function createPhysicsWorld() {
 
 
     // =================================
-    // CREAR CUERPO ESTÁTICO
+    // CUERPOS ESTÁTICOS
     // =================================
 
     function createStaticBox({
@@ -463,13 +462,14 @@ export function createPhysicsWorld() {
 
         world.addBody(body);
 
+
         return body;
 
     }
 
 
     // =================================
-    // CREAR CUERPO DINÁMICO
+    // CUERPOS DINÁMICOS
     // =================================
 
     function createDynamicBody({
@@ -554,6 +554,7 @@ export function createPhysicsWorld() {
 
         body.updateMassProperties();
 
+
         world.addBody(body);
 
 
@@ -563,20 +564,8 @@ export function createPhysicsWorld() {
 
 
     // =================================
-    // CREAR RECIPIENTE ABIERTO
+    // CREAR RECIPIENTE
     // =================================
-
-    /**
-     * position representa el centro del fondo
-     * del recipiente.
-     *
-     * El recipiente tiene:
-     * - Un fondo.
-     * - Una pared izquierda.
-     * - Una pared derecha.
-     * - Una pared frontal.
-     * - Una pared trasera.
-     */
 
     function createContainer({
 
@@ -630,6 +619,7 @@ export function createPhysicsWorld() {
 
         });
 
+
         bodies.push(floor);
 
 
@@ -661,6 +651,7 @@ export function createPhysicsWorld() {
             name: `${name}-left-wall`
 
         });
+
 
         bodies.push(leftWall);
 
@@ -694,6 +685,7 @@ export function createPhysicsWorld() {
 
         });
 
+
         bodies.push(rightWall);
 
 
@@ -725,6 +717,7 @@ export function createPhysicsWorld() {
             name: `${name}-front-wall`
 
         });
+
 
         bodies.push(frontWall);
 
@@ -758,6 +751,7 @@ export function createPhysicsWorld() {
 
         });
 
+
         bodies.push(backWall);
 
 
@@ -777,13 +771,10 @@ export function createPhysicsWorld() {
 
             bodies,
 
-            // Límite superior de las paredes.
             top: position.y + height,
 
-            // Nivel del fondo interior.
             bottom: position.y,
 
-            // Coordenadas interiores.
             bounds: {
 
                 minX: position.x - width / 2,
@@ -794,7 +785,9 @@ export function createPhysicsWorld() {
 
                 maxZ: position.z + depth / 2,
 
-                minY: position.y
+                minY: position.y,
+
+                maxY: position.y + height
 
             }
 
@@ -803,19 +796,16 @@ export function createPhysicsWorld() {
     }
 
 
-    // =================================
+    // =============================================
     // CUERPOS CINEMÁTICOS
-    // =================================
+    // =============================================
 
-    /**
-     * Cambia un cuerpo dinámico a cinemático.
-     * Se utilizará mientras el usuario sostiene
-     * un objeto mediante el gesto de pinza.
-     */
     function setKinematic(body) {
 
         if (!body) {
+
             return;
+
         }
 
 
@@ -825,26 +815,29 @@ export function createPhysicsWorld() {
 
         body.mass = 0;
 
+
         body.velocity.set(0, 0, 0);
 
         body.angularVelocity.set(0, 0, 0);
 
+
         body.updateMassProperties();
+
+        body.aabbNeedsUpdate = true;
 
     }
 
 
-    // =================================
+    // =============================================
     // RESTAURAR CUERPO DINÁMICO
-    // =================================
+    // =============================================
 
-    /**
-     * Devuelve la física normal al objeto.
-     */
     function setDynamic(body, mass = 1) {
 
         if (!body) {
+
             return;
+
         }
 
 
@@ -852,39 +845,55 @@ export function createPhysicsWorld() {
 
         body.mass = mass;
 
+
         body.updateMassProperties();
+
 
         body.velocity.set(0, 0, 0);
 
         body.angularVelocity.set(0, 0, 0);
+
+
+        body.aabbNeedsUpdate = true;
 
         body.wakeUp();
 
     }
 
 
-    // =================================
-    // ACTUALIZAR POSICIÓN CINEMÁTICA
-    // =================================
+    // =============================================
+    // MOVER CUERPO CINEMÁTICO
+    // =============================================
 
-    function moveKinematicBody(body, position, deltaTime = 1 / 60) {
+    function moveKinematicBody(
+
+        body,
+
+        position,
+
+        deltaTime = 1 / 60
+
+    ) {
 
         if (!body) {
+
             return;
+
         }
 
 
         const safeDelta = Math.max(
+
             deltaTime,
+
             1 / 120
+
         );
 
 
         const nextPosition = toCannonVector(position);
 
 
-        // Calcular velocidad para mantener una
-        // respuesta física más estable.
         body.velocity.set(
 
             (nextPosition.x - body.position.x) / safeDelta,
@@ -900,6 +909,7 @@ export function createPhysicsWorld() {
 
         body.position.copy(nextPosition);
 
+
         body.aabbNeedsUpdate = true;
 
         body.wakeUp();
@@ -907,18 +917,16 @@ export function createPhysicsWorld() {
     }
 
 
-    // =================================
+    // =============================================
     // SINCRONIZAR MALLA Y CUERPO
-    // =================================
+    // =============================================
 
-    /**
-     * Copia posición y rotación del cuerpo físico
-     * al objeto visual de Three.js.
-     */
     function syncMeshBody(mesh, body) {
 
         if (!mesh || !body) {
+
             return;
+
         }
 
 
@@ -948,17 +956,20 @@ export function createPhysicsWorld() {
     }
 
 
-    // =================================
+    // =============================================
     // SINCRONIZAR TODOS LOS OBJETOS
-    // =================================
+    // =============================================
 
     function syncAll(objects) {
 
         objects.forEach(object => {
 
             if (!object.mesh || !object.body) {
+
                 return;
+
             }
+
 
             syncMeshBody(
 
@@ -973,46 +984,27 @@ export function createPhysicsWorld() {
     }
 
 
-    // =================================
-    // REMOVER CUERPOS
-    // =================================
+    // =============================================
+    // ELIMINAR CUERPO
+    // =============================================
 
     function removeBody(body) {
 
         if (!body) {
+
             return;
+
         }
+
 
         world.removeBody(body);
 
     }
 
 
-    // =================================
-    // LIMPIAR MUNDO FÍSICO
-    // =================================
-
-    function dispose() {
-
-        const bodies = [...world.bodies];
-
-        bodies.forEach(body => {
-
-            world.removeBody(body);
-
-        });
-
-
-        console.log(
-            '[PHYSICS] Mundo físico liberado.'
-        );
-
-    }
-
-
-    // =================================
-    // INFORMACIÓN DEL MOTOR
-    // =================================
+    // =============================================
+    // ESTADÍSTICAS
+    // =============================================
 
     function getStats() {
 
@@ -1024,21 +1016,39 @@ export function createPhysicsWorld() {
 
             fixedTimeStep: PHYSICS_CONFIG.fixedTimeStep,
 
-            solverIterations:
-                PHYSICS_CONFIG.solverIterations
+            solverIterations: PHYSICS_CONFIG.solverIterations
 
         };
 
     }
 
 
-    // =================================
-    // API PÚBLICA
-    // =================================
+    // =============================================
+    // LIBERAR RECURSOS
+    // =============================================
 
-    console.log(
-        '[PHYSICS] Motor físico preparado.'
-    );
+    function dispose() {
+
+        const bodies = [...world.bodies];
+
+
+        bodies.forEach(body => {
+
+            world.removeBody(body);
+
+        });
+
+
+        console.log('[PHYSICS] Mundo físico liberado.');
+
+    }
+
+
+    // =============================================
+    // API PÚBLICA
+    // =============================================
+
+    console.log('[PHYSICS] Motor físico preparado.');
 
 
     return {

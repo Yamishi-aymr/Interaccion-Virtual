@@ -22,7 +22,7 @@
 
 const GAME_CONFIG = {
 
-    totalObjects: 20,
+    totalObjects: 32,
 
     stableVelocity: 0.18,
 
@@ -136,49 +136,24 @@ export function createGameSystem({
     // ESTADÍSTICAS POR CATEGORÍA
     // =================================
 
-    const categoryStats = {
+    // Las cantidades se calculan desde los objetos reales.
+    const categoryStats = {};
 
-        sphere: {
+    objects.forEach(object => {
 
-            correct: 0,
+        if (!categoryStats[object.category]) {
 
-            errors: 0,
-
-            total: 5
-
-        },
-
-        cube: {
-
-            correct: 0,
-
-            errors: 0,
-
-            total: 5
-
-        },
-
-        pyramid: {
-
-            correct: 0,
-
-            errors: 0,
-
-            total: 5
-
-        },
-
-        octahedron: {
-
-            correct: 0,
-
-            errors: 0,
-
-            total: 5
+            categoryStats[object.category] = {
+                correct: 0,
+                errors: 0,
+                total: 0
+            };
 
         }
 
-    };
+        categoryStats[object.category].total++;
+
+    });
 
 
     // =================================
@@ -833,11 +808,11 @@ export function createGameSystem({
 
             correct: correctCount,
 
-            total: GAME_CONFIG.totalObjects,
+            total: objects.length,
 
             percentage: Math.round(
 
-                (correctCount / GAME_CONFIG.totalObjects) * 100
+                (correctCount / objects.length) * 100
 
             )
 
@@ -856,7 +831,7 @@ export function createGameSystem({
 
             completed ||
 
-            correctCount < GAME_CONFIG.totalObjects
+            correctCount < objects.length
 
         ) {
 
@@ -924,7 +899,7 @@ export function createGameSystem({
 
     function update(deltaTime = 1 / 60) {
 
-        if (disposed || paused || completed) {
+        if (disposed || paused || completed || !started) {
 
             return;
 
@@ -942,15 +917,7 @@ export function createGameSystem({
         );
 
 
-        // Iniciar cronómetro al comenzar
-        // la actualización si aún no inició.
-        if (!started) {
-
-            start();
-
-        }
-
-
+        // El cronómetro solo avanza después de start().
         updateTimer(safeDelta);
 
 
@@ -1007,7 +974,7 @@ export function createGameSystem({
 
             errors: errorCount,
 
-            total: GAME_CONFIG.totalObjects,
+            total: objects.length,
 
             accuracy: getAccuracy(),
 
@@ -1015,7 +982,7 @@ export function createGameSystem({
 
             remaining:
 
-                GAME_CONFIG.totalObjects - correctCount,
+                objects.length - correctCount,
 
             categories: structuredClone(categoryStats)
 
@@ -1060,7 +1027,11 @@ export function createGameSystem({
         // Reiniciar recipientes.
         containers.forEach(container => {
 
-            container.objectsInside.length = 0;
+            if (Array.isArray(container.objectsInside)) {
+
+                container.objectsInside.length = 0;
+
+            }
 
         });
 
